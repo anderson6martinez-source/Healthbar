@@ -1,4 +1,5 @@
 using Game;
+using GameEntitySystem;
 
 namespace HealthBarMod
 {

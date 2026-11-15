@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Graphics;
 using Game;
+using GameEntitySystem;
 using TemplatesDatabase;
 
 namespace HealthBarMod
