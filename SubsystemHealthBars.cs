@@ -1,80 +1,68 @@
 using Engine;
 using Engine.Graphics;
-using Game;
 using GameEntitySystem;
+using TemplatesDatabase;
 
-namespace HealthBarMod
+namespace Game
 {
-    // Widget a pantalla completa que dibuja barras de vida sobre las criaturas.
-    public class HealthBarWidget : Widget
+    // Componente que se agrega a cada criatura (via HealthBar.xdb) y dibuja su barra de vida.
+    public class ComponentHealthBarMod : Component, IDrawable
     {
-        const float MaxDistance = 15f;
+        const float MaxDistance = 20f;   // bloques
+        const float BarWidth = 1.0f;
+        const float BarHeight = 0.12f;
+        const bool ShowWhenFull = true;  // true = tambien con la vida completa (modo prueba)
 
-        readonly ComponentPlayer m_player;
-        readonly SubsystemCreatureSpawn m_creatureSpawn;
+        ComponentHealth m_health;
+        ComponentBody m_body;
+        bool m_isPlayer;
 
-        public HealthBarWidget(ComponentPlayer player)
+        readonly PrimitivesRenderer3D m_renderer = new PrimitivesRenderer3D();
+        static readonly int[] m_drawOrders = { 2000 };
+
+        public int[] DrawOrders => m_drawOrders;
+
+        public override void Load(ValuesDictionary valuesDictionary, IdToEntityMap idToEntityMap)
         {
-            m_player = player;
-            m_creatureSpawn = player.Project.FindSubsystem<SubsystemCreatureSpawn>(true);
-            IsHitTestVisible = false;
+            base.Load(valuesDictionary, idToEntityMap);
+            m_health = Entity.FindComponent<ComponentHealth>(false);
+            m_body = Entity.FindComponent<ComponentBody>(false);
+            m_isPlayer = Entity.FindComponent<ComponentPlayer>(false) != null;
         }
 
-        public override void MeasureOverride(Vector2 parentAvailableSize)
+        public void Draw(Camera camera, int drawOrder)
         {
-            IsDrawRequired = true;
-            DesiredSize = parentAvailableSize;
-        }
+            if (m_health == null || m_body == null || m_isPlayer) return;
 
-        public override void Draw(DrawContext dc)
-        {
-            Camera camera = m_player.GameWidget.ActiveCamera;
-            if (camera == null) return;
+            float life = m_health.Health;
+            if (life <= 0f) return;
+            if (!ShowWhenFull && life >= 1f) return;
 
-            FlatBatch2D batch = dc.PrimitivesRenderer2D.FlatBatch(
-                1, DepthStencilState.None, RasterizerState.CullNoneScissor, BlendState.AlphaBlend);
+            Vector3 top = m_body.BoundingBox.Max;
+            Vector3 pos = new Vector3(m_body.Position.X, top.Y + 0.3f, m_body.Position.Z);
 
-            // PRUEBA: barra fija arriba a la izquierda para confirmar que el widget se dibuja
-            Vector2 t1 = Vector2.Transform(new Vector2(20f, 120f), GlobalTransform);
-            Vector2 t2 = Vector2.Transform(new Vector2(160f, 136f), GlobalTransform);
-            batch.QueueQuad(t1, t2, 0f, new Color(210, 50, 50));
+            if (Vector3.Distance(camera.ViewPosition, pos) > MaxDistance) return;
+            if (Vector3.Dot(camera.ViewDirection, pos - camera.ViewPosition) <= 0f) return;
 
-            Matrix viewProj = camera.ViewProjectionMatrix;
+            Vector3 right = Vector3.Normalize(Vector3.Cross(camera.ViewDirection, Vector3.UnitY));
+            Vector3 up = Vector3.UnitY;
 
-            foreach (ComponentCreature creature in m_creatureSpawn.Creatures)
-            {
-                ComponentHealth health = creature.ComponentHealth;
-                if (health == null || health.Health <= 0f) continue; // PRUEBA: muestra la barra siempre
+            float half = BarWidth / 2f;
+            Vector3 l = pos - right * half;
+            Vector3 r = pos + right * half;
+            Vector3 fill = l + right * (BarWidth * life);
 
-                Vector3 body = creature.ComponentBody.Position;
-                Vector3 pos = new Vector3(body.X, creature.ComponentBody.BoundingBox.Max.Y + 0.3f, body.Z);
+            Color fillColor = life > 0.5f ? new Color(60, 200, 60)
+                            : life > 0.25f ? new Color(230, 200, 40)
+                            : new Color(210, 50, 50);
 
-                float dist = Vector3.Distance(camera.ViewPosition, pos);
-                if (dist > MaxDistance) continue;
+            FlatBatch3D batch = m_renderer.FlatBatch(
+                -1, DepthStencilState.DepthRead, RasterizerState.CullNoneScissor, BlendState.AlphaBlend);
 
-                Vector4 clip = Vector4.Transform(new Vector4(pos, 1f), viewProj);
-                if (clip.W <= 0.01f) continue;
+            batch.QueueQuad(l, r, r + up * BarHeight, l + up * BarHeight, new Color(40, 40, 40, 200));
+            batch.QueueQuad(l, fill, fill + up * BarHeight, l + up * BarHeight, fillColor);
 
-                float nx = clip.X / clip.W;
-                float ny = clip.Y / clip.W;
-                if (nx < -1f || nx > 1f || ny < -1f || ny > 1f) continue;
-
-                Vector2 local = new Vector2((nx * 0.5f + 0.5f) * ActualSize.X, (0.5f - ny * 0.5f) * ActualSize.Y);
-                Vector2 center = Vector2.Transform(local, GlobalTransform);
-
-                float width = MathUtils.Clamp(600f / dist, 24f, 90f);
-                float height = 6f;
-                Vector2 topLeft = center - new Vector2(width / 2f, height / 2f);
-                Vector2 bottomRight = center + new Vector2(width / 2f, height / 2f);
-                Vector2 fillRight = new Vector2(topLeft.X + width * health.Health, bottomRight.Y);
-
-                Color fillColor = health.Health > 0.5f ? new Color(60, 200, 60)
-                                : health.Health > 0.25f ? new Color(230, 200, 40)
-                                : new Color(210, 50, 50);
-
-                batch.QueueQuad(topLeft, bottomRight, 0f, new Color(40, 40, 40, 200));
-                batch.QueueQuad(topLeft, fillRight, 0f, fillColor);
-            }
+            m_renderer.Flush(camera.ViewProjectionMatrix);
         }
     }
 }

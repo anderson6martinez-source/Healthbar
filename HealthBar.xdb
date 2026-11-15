@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mod>
+  <Folder Name="Gameplay" Guid="d3d4b692-acc9-4128-9b99-a5acf1de1fbb">
+    <ComponentTemplate Name="HealthBarMod" Guid="384e335f-1cea-44ab-984c-5ea96ab280f5" InheritanceParent="b05700ed-7e4e-4679-98f5-b597f421496b">
+      <Parameter Name="Class" Guid="a680c349-f576-4b07-a9c6-5fed907fb513" Value="ComponentHealthBarMod" Type="string" />
+    </ComponentTemplate>
+  </Folder>
+
+  <EntityTemplate Name="Creature" Guid="bc5be211-c1f8-4e50-9ffb-4fde625d2692">
+    <MemberComponentTemplate Name="HealthBarMod" Guid="f47e6e37-47b8-4757-b55d-01552dd96225" InheritanceParent="384e335f-1cea-44ab-984c-5ea96ab280f5" />
+  </EntityTemplate>
+</Mod>
