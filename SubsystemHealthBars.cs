@@ -39,7 +39,7 @@ namespace HealthBarMod
             foreach (ComponentCreature creature in m_creatureSpawn.Creatures)
             {
                 ComponentHealth health = creature.ComponentHealth;
-                if (health == null || health.Health <= 0f || health.Health >= 1f) continue;
+                if (health == null || health.Health <= 0f) continue; // PRUEBA: muestra la barra siempre
 
                 Vector3 body = creature.ComponentBody.Position;
                 Vector3 pos = new Vector3(body.X, creature.ComponentBody.BoundingBox.Max.Y + 0.3f, body.Z);
