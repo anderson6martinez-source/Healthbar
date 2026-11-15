@@ -9,9 +9,9 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="src/**/*.cs" />
-    <Reference Include="Survivalcraft23"><HintPath>libs/Survivalcraft23.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="EntitySistem23"><HintPath>libs/EntitySistem23.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Engine23"><HintPath>libs/Engine23.dll</HintPath><Private>false</Private></Reference>
+    <Compile Include="*.cs" />
+    <Reference Include="Survivalcraft23"><HintPath>Survivalcraft23.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="EntitySystem23"><HintPath>EntitySystem23.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Engine23"><HintPath>Engine23.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 </Project>
