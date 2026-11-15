@@ -11,14 +11,15 @@ namespace HealthBarMod
             ModsManager.RegisterHook("OnPlayerSpawned", this);
         }
 
-        public override void OnPlayerSpawned(PlayerData.SpawnMode spawnMode, ComponentPlayer componentPlayer, Vector3 position)
+        public override bool OnPlayerSpawned(PlayerData.SpawnMode spawnMode, ComponentPlayer componentPlayer, Vector3 position)
         {
             ContainerWidget container = componentPlayer.ComponentGui.ControlsContainerWidget;
             foreach (Widget w in container.Children)
             {
-                if (w is HealthBarWidget) return;
+                if (w is HealthBarWidget) return false;
             }
             container.AddChildren(new HealthBarWidget(componentPlayer));
+            return false;
         }
     }
 }
