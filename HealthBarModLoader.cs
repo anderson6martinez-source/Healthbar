@@ -1,3 +1,4 @@
+using Engine;
 using Game;
 using GameEntitySystem;
 
@@ -7,14 +8,17 @@ namespace HealthBarMod
     {
         public override void __ModInitialize()
         {
-            ModsManager.RegisterHook("OnProjectLoaded", this);
+            ModsManager.RegisterHook("OnPlayerSpawned", this);
         }
 
-        public override void OnProjectLoaded(Project project)
+        public override void OnPlayerSpawned(PlayerData.SpawnMode spawnMode, ComponentPlayer componentPlayer, Vector3 position)
         {
-            // Punto a ajustar segun tu version del API: aqui se registra el subsistema.
-            var sub = new SubsystemHealthBars();
-            project.AddSubsystem(sub);
+            ContainerWidget container = componentPlayer.ComponentGui.ControlsContainerWidget;
+            foreach (Widget w in container.Children)
+            {
+                if (w is HealthBarWidget) return;
+            }
+            container.AddChildren(new HealthBarWidget(componentPlayer));
         }
     }
 }
