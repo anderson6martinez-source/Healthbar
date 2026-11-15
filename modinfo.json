@@ -1,0 +1,10 @@
+{
+  "Name": "Health Bar",
+  "Version": "1.0.0",
+  "ApiVersion": "1.5",
+  "Description": "Muestra una barra de vida sobre las criaturas heridas.",
+  "ScVersion": "2.3",
+  "PackageName": "com.ander.healthbar",
+  "Author": "ander",
+  "Link": ""
+}

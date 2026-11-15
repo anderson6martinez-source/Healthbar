@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>HealthBarMod</AssemblyName>
+    <RootNamespace>HealthBarMod</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+    <Reference Include="Survivalcraft23"><HintPath>libs/Survivalcraft23.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="EntitySistem23"><HintPath>libs/EntitySistem23.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Engine23"><HintPath>libs/Engine23.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
