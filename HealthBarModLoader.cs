@@ -13,6 +13,7 @@ namespace HealthBarMod
 
         public override bool OnPlayerSpawned(PlayerData.SpawnMode spawnMode, ComponentPlayer componentPlayer, Vector3 position)
         {
+            componentPlayer.ComponentGui.DisplaySmallMessage("HealthBar mod cargado", Color.White, false, false);
             ContainerWidget container = componentPlayer.ComponentGui.ControlsContainerWidget;
             foreach (Widget w in container.Children)
             {

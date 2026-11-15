@@ -34,6 +34,11 @@ namespace HealthBarMod
             FlatBatch2D batch = dc.PrimitivesRenderer2D.FlatBatch(
                 1, DepthStencilState.None, RasterizerState.CullNoneScissor, BlendState.AlphaBlend);
 
+            // PRUEBA: barra fija arriba a la izquierda para confirmar que el widget se dibuja
+            Vector2 t1 = Vector2.Transform(new Vector2(20f, 120f), GlobalTransform);
+            Vector2 t2 = Vector2.Transform(new Vector2(160f, 136f), GlobalTransform);
+            batch.QueueQuad(t1, t2, 0f, new Color(210, 50, 50));
+
             Matrix viewProj = camera.ViewProjectionMatrix;
 
             foreach (ComponentCreature creature in m_creatureSpawn.Creatures)
